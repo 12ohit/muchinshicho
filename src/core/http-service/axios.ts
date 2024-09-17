@@ -1,4 +1,4 @@
-import axios, { AxiosRequestHeaders } from 'axios';
+import axios, { AxiosError, AxiosRequestHeaders } from 'axios';
 
 // const API_BASE_URL = process.env.NODE_ENV === 'development' ? process.env.API_URL : '/v1/'
 
@@ -9,19 +9,22 @@ anilistHttpRequest.interceptors.request.use(
   (config) => {
     const clonedConfig = { ...config };
 
+    clonedConfig.baseURL = 'https://graphql.anilist.co';
     clonedConfig.headers = {
-      ...clonedConfig.headers,
-      Test: 1
+      'Content-Type': 'application/json',
+      Accept: 'application/json'
     } as unknown as AxiosRequestHeaders;
 
     return clonedConfig;
   },
-  (error) => error
+  (error: AxiosError) => error
 );
 
 anilistHttpRequest.interceptors.response.use(
   (response) => response,
-  (error) => {
-    console.log('This is error in axios interceptor for anilist', error);
+  (error: AxiosError) => {
+    console.log('Oh no! We got an error.');
+
+    return Promise.reject(error);
   }
 );
